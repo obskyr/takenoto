@@ -59,11 +59,19 @@ class EmojiRepo(object):
             raise NonexistentEmojiError(filename)
         return r.content
 
+def get(emoji, filetype="svg", commitId=None):
+    """Get the SVG or PNG data for an emoji. Valid input formats for the
+    emoji are: a Unicode character, a comma-separated combination of
+    Unicode characters, a hex code (eg. "0x01f633") or a comma-separated
+    list of hex codes (eg. "0x01f1f8, 0x01f1ea")
+    """
+    return EmojiRepo(commitId).get(emoji, filetype)
+
 if __name__ == '__main__':
     EmojiRepo().get(
         "\\U0001f1fa\\U0001f1f8".decode("unicode-escape")
     )
-    EmojiRepo().get(
+    get(
         "0x1f1fa, 0x0001f1f8"
     )
     print "Got emoji successfully! It works!"
