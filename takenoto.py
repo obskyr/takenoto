@@ -2,13 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import re
-import unicodedata
 import requests
 from urlparse import urljoin
-from bs4 import BeautifulSoup
-
-def getSoup(url):
-    return BeautifulSoup(requests.get(url).text)
 
 class NonexistentEmojiError(Exception):
     def __init__(self, filename):
@@ -38,19 +33,6 @@ def emojiToNotoFilename(emoji, extension="svg"):
     filename += emoji + "." + extension
 
     return filename
-
-def notoFilenameToEmoji(notoFilename):
-    """Convert a Noto filename to a Unicode emoji."""
-    # Might remove this if it doesn't prove useful.
-    # OR NOT HE HE HE HE HE
-
-    codes = notoFilename[7:] # len("emoji_u") is 7
-    codes = codes.split(".")[0]
-    codes = codes.split("_")
-    codes = ["\U" + code.zfill(8) for code in codes]
-    codes = [code.decode("unicode-escape") for code in codes]
-    emoji = ''.join(codes)
-    return emoji
 
 class EmojiRepo(object):
     def __init__(self, commitId=None):
