@@ -106,9 +106,10 @@ if __name__ == '__main__':
     parser.add_argument("-t", "--type",
         help="The type of the emoji argument. Can be \"emoji\" for the " \
         "actual Unicode emoji, \"hex\" for the hex code(s) of the emoji, " \
-        "\"searchterm\" for an Emojipedia search term, or \"auto\" to " \
-        "automatically determine. Defaults to auto.",
-        choices=["auto", "emoji", "hex", "searchterm"],
+        "\"unicodeescape\" for a Unicode escape sequence (eg. "\
+        "\\U0001f1f8\\U0001f1ea), \"searchterm\" for an Emojipedia search" \
+        "term, or \"auto\" to automatically determine. Defaults to auto.",
+        choices=["auto", "emoji", "hex", "unicodeescape", "searchterm"],
         default="auto",
         dest="termType"
     )
