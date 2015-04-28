@@ -9,6 +9,8 @@ import emojipedia
 import noto
 
 def determineTermType(term):
+    """Return a guessed emoji term type. Possible results are "emoji",
+    "unicodeescape", "hex" and "searchterm"."""
     hexset = set("0x1234567890abcdef, ")
     uniset = set("\\uU1234567890abcdef")
     encodedTerm = term.encode('unicode-escape')
@@ -22,7 +24,9 @@ def determineTermType(term):
     return 'searchterm'
 
 def getEmojiIdentification(term, termType='auto', first=False):
-    """Get a noto.get()-compatible emoji from `term`."""
+    """Get a noto.get()-compatible emoji from `term`. If no emoji exactly
+    matching the term is found, return a list of search results.
+    """
     if termType == 'auto':
         termType = determineTermType(term)
 
@@ -35,12 +39,43 @@ def getEmojiIdentification(term, termType='auto', first=False):
     if first and len(results):
         return results[0].emoji
     for result in results:
-        if result.title == term.strip():
+        if result.name.lower() == term.lower().strip():
             return result.emoji
-
     return results
 
+def downloadEmoji(term, outPath="", fileFormat="svg", termType='auto',
+    first=False):
+    """Fuzzy-dowload an emoji specified by `term` to `outPath`."""
+    emoji = getEmojiIdentification(term, termType, first)
+    if isinstance(emoji, list):
+        if not len(emoji):
+            print "No results were found for that search term!"
+            return
+        print "Several results matching the search term were found."
+        print
+        print "To download one, either change your search time to the exact " \
+            "name of one"
+        print "of the emoji, or specify --first to just download the first result."
+        print
+        print "Results:"
+        for result in emoji[:10]:
+            print "\t" + result.name
+        return
 
+    print "Downloading emoji..."
+    emojiData = noto.get(emoji)
+    filename = noto.emojiToNotoFilename(emoji)
+
+    # For handling both outPaths as dir paths and as file paths:
+    splitPath = os.path.split(outPath)
+    if os.path.splitext(splitPath[1])[1]:
+        outPath, filename = os.path.split(outPath)
+
+    with open(os.path.join(outPath, filename), 'w') as f:
+        f.write(emojiData)
+
+    print "Downloaded {filename}{toPath}!".format(filename=filename,
+        toPath=" to {path}".format(path=outPath) if outPath else "")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -53,14 +88,16 @@ if __name__ == '__main__':
         "combination of) hex codes (eg. 0x1f60e or 0x1f1f8,0x1f1ea)."
     )
     parser.add_argument("-o", "--outpath",
-        help="Where to save the emoji to. Defaults to current working " \
-        "directory.",
-        default=""
+        help="Where to save the emoji to. Either a directory or a full file " \
+        "path. Defaults to the Noto filename in the current working directory.",
+        default="",
+        dest="outPath"
     )
     parser.add_argument("-f", "--format",
         help="The format of the downloaded emoji file. Defaults to SVG.",
         choices=["svg", "png"],
-        default="svg"
+        default="svg",
+        dest="fileFormat"
     )
     parser.add_argument("-1", "--first",
         help="Grab the first search result no matter how many were found.",
@@ -76,16 +113,15 @@ if __name__ == '__main__':
         dest="termType"
     )
 
-    inputFormats = [ # Should register as...
-        "0x1f603",                    # hex
-        "0x1f1f8,0x1f1ea",            # hex
-        u"\U0001f348",                # emoji
-        u"\u2139",                    # emoji
-        "\\U0001f348",                # unicodeescape
-        "Sure, why not?",             # searchterm
-        "0xHahah, yeah, no problem.", # searchterm
-        "\\UCool face"                # searchterm
-    ]
+    args = parser.parse_args()
 
-    for s in inputFormats:
-        print s.__repr__().ljust(35) + determineTermType(s)
+    try:
+        downloadEmoji(args.emoji, args.outPath, args.fileFormat, args.termType,
+            args.first)
+    except noto.NonexistentEmojiError:
+        print
+        print "That emoji does not seem to exist within Noto! Sorry!"
+    except IOError:
+        print
+        print "Couldn't save the emoji. Make sure you've got the right"
+        print "permissions and that all directories along the way exist."

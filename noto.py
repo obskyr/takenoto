@@ -27,7 +27,7 @@ def emojiToNotoFilename(emoji, extension="svg"):
         "0x", ""
     ).lower()
     emoji = re.split(r"u|,\s*", emoji)
-    emoji = emoji[1:] # The first entry is empty.
+    emoji = [c for c in emoji if c]
     emoji = [code.lstrip("0") for code in emoji]
     emoji = "_".join(emoji)
     filename += emoji + "." + extension
