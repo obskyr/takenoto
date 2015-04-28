@@ -9,12 +9,15 @@ import emojipedia
 import noto
 
 def determineTermType(term):
+    hexset = set("0x1234567890abcdef, ")
+    uniset = set("\\uU1234567890abcdef")
     encodedTerm = term.encode('unicode-escape')
-    if encodedTerm[:2].lower() == '\\u':
+    encodedTermSet = set(encodedTerm.lower())
+    if encodedTerm[:2].lower() == '\\u' and encodedTermSet.issubset(uniset):
         return 'emoji'
-    elif encodedTerm[:3].lower() == '\\\\u':
+    elif encodedTerm[:3].lower() == '\\\\u' and encodedTermSet.issubset(uniset):
         return 'unicodeescape'
-    elif term[:2] == '0x':
+    elif term[:2] == '0x' and set(term).issubset(hexset):
         return 'hex'
     return 'searchterm'
 
@@ -74,13 +77,14 @@ if __name__ == '__main__':
     )
 
     inputFormats = [ # Should register as...
-        "0x1f603", # hex
-        "0x1f1f8,0x1f1ea", # hex
-        u"\U0001f348", # emoji
-        "\\U0001f348", # unicodeescape
-        "Sure, why not?", # searchterm
+        "0x1f603",                    # hex
+        "0x1f1f8,0x1f1ea",            # hex
+        u"\U0001f348",                # emoji
+        u"\u2139",                    # emoji
+        "\\U0001f348",                # unicodeescape
+        "Sure, why not?",             # searchterm
         "0xHahah, yeah, no problem.", # searchterm
-        "\\UCool face" # searchterm
+        "\\UCool face"                # searchterm
     ]
 
     for s in inputFormats:
