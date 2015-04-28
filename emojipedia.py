@@ -18,6 +18,11 @@ class SearchResult(object):
         h1 = article.find("h1").text.strip()
         self.emoji, self.name = h1.split(" ", 1)
 
+    def __repr__(self):
+        return "<Emoji search result {code} - {name}".format(
+            code=self.emoji.encode('unicode-escape'), name=self.name
+        )
+
 def search(term):
     url = "http://emojipedia.org/?s="
     # Thankfully, emojipedia's search does URL-encoded emoji too.
