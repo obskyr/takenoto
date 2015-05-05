@@ -10,7 +10,6 @@ from urllib import quote_plus
 from bs4 import BeautifulSoup
 
 def getSoup(url):
-
     return BeautifulSoup(requests.get(url).content)
 
 class SearchResult(object):
