@@ -43,7 +43,7 @@ def getEmojiIdentification(term, termType='auto', first=False):
             return result.emoji
     return results
 
-def downloadEmoji(term, outPath="", fileFormat="svg", termType='auto',
+def downloadEmoji(term, outPath="", fileFormat="svg", commitId=None, termType='auto',
     first=False):
     """Fuzzy-dowload an emoji specified by `term` to `outPath`."""
     emoji = getEmojiIdentification(term, termType, first)
@@ -63,15 +63,20 @@ def downloadEmoji(term, outPath="", fileFormat="svg", termType='auto',
         return
 
     print "Downloading emoji..."
-    emojiData = noto.get(emoji)
-    filename = noto.emojiToNotoFilename(emoji)
+    emojiData = noto.get(emoji, fileFormat, commitId)
+    filename = noto.emojiToNotoFilename(emoji, fileFormat)
+
+    if commitId:
+        # Having the commit ID in the default filename should be nice.
+        fn, ext = os.path.splitext(filename)
+        filename = fn + "_" + commitId[:10] + ext
 
     # For handling both outPaths as dir paths and as file paths:
     splitPath = os.path.split(outPath)
     if os.path.splitext(splitPath[1])[1]:
         outPath, filename = os.path.split(outPath)
 
-    with open(os.path.join(outPath, filename), 'w') as f:
+    with open(os.path.join(outPath, filename), 'wb') as f:
         f.write(emojiData)
 
     print "Downloaded {filename}{toPath}!".format(filename=filename,
@@ -99,6 +104,10 @@ if __name__ == '__main__':
         default="svg",
         dest="fileFormat"
     )
+    parser.add_argument("-p", "--old",
+        help="Get old emoji, from before the new yellow people emoji.",
+        action="store_true"
+    )
     parser.add_argument("-1", "--first",
         help="Grab the first search result no matter how many were found.",
         action="store_true"
@@ -116,9 +125,12 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    # This commit ID is right before the new yellow emoji were put in.
+    oldCommitId = "aed0c0d4b9a6187c3fe143141b99332f31b1d69f"
+
     try:
-        downloadEmoji(args.emoji, args.outPath, args.fileFormat, args.termType,
-            args.first)
+        downloadEmoji(args.emoji, args.outPath, args.fileFormat,
+        (oldCommitId if args.old else None), args.termType, args.first)
     except noto.NonexistentEmojiError:
         print
         print "That emoji does not seem to exist within Noto! Sorry!"
