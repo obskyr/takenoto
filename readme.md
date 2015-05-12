@@ -2,12 +2,13 @@
 
 A script to take Notos. Ha!
 
-Seriously, though - `takenotos.py` lets you easily download [Noto](https://www.google.com/get/noto/) (Google's emoji font) emoji in both SVG and PNG format. Check it out:
+Seriously, though - `takenoto.py` lets you easily download [Noto](https://www.google.com/get/noto/) (Google's emoji font) emoji in both SVG and PNG format. Check it out:
 
 ```
+takenoto.py sushi
+takenoto.py "rice ball"
 takenoto.py 0x01f60e
 takenoto.py 🍈
-takenoto.py "rice ball"
 takenoto.py \U0001f1f8\U0001f1ea
 ```
 
@@ -15,8 +16,8 @@ These are all valid ways to download emoji files! For more advanced options, try
 
 ```
 takenoto.py cool --first
-takenoto.py melon --format png
-takenoto.py 0x1f1f8,0x1f1ea -o swedishflag.svg
+takenoto.py watermelon --format png
+takenoto.py 0x1f1ef,0x1f1f5 -o japaneseflag.svg
 ```
 
 Have fun! For more info on the command line parameters, just run `takenoto.py -h`
