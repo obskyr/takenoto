@@ -126,7 +126,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # This commit ID is right before the new yellow emoji were put in.
-    oldCommitId = "aed0c0d4b9a6187c3fe143141b99332f31b1d69f"
+    oldCommitId = "bf295c4580e51ae98b9ed4399bbf72a31c1cc525"
 
     try:
         downloadEmoji(args.emoji, args.outPath, args.fileFormat,

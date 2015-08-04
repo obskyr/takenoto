@@ -36,13 +36,12 @@ def emojiToNotoFilename(emoji, extension="svg"):
 
 class EmojiRepo(object):
     def __init__(self, commitId=None):
-        self.baseUrl = "https://noto.googlecode.com/"
+        self.baseUrl = ("https://raw.githubusercontent.com/"
+            "googlei18n/noto-emoji/")
         if commitId:
-            self.baseUrl = urljoin(self.baseUrl,
-                "git-history/" + commitId + "/")
+            self.baseUrl = urljoin(self.baseUrl, commitId + "/")
         else:
-            self.baseUrl = urljoin(self.baseUrl, "git/")
-        self.baseUrl = urljoin(self.baseUrl, "color_emoji/")
+            self.baseUrl = urljoin(self.baseUrl, "master/")
 
     def get(self, emoji, filetype="svg"):
         """Get the SVG or PNG data for an emoji. Valid input formats for the
