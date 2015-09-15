@@ -13,12 +13,12 @@ def getSoup(url):
     return BeautifulSoup(requests.get(url).content, 'html.parser')
 
 class SearchResult(object):
-    def __init__(self, article):
-        h1 = article.find("h1").text.strip()
-        self.emoji, self.name = h1.split(" ", 1)
+    def __init__(self, li):
+        a = li.find('a')
+        self.emoji, self.name = list(a.stripped_strings)[:2]
 
     def __repr__(self):
-        return "<Emoji search result {code} - {name}".format(
+        return "<Emoji search result {code} - {name}>".format(
             code=self.emoji.encode('unicode-escape'), name=self.name
         )
 
@@ -29,8 +29,9 @@ def search(term):
 
     soup = getSoup(url)
     results = []
-    for article in soup('article', class_='hentry'):
-        results.append(SearchResult(article))
+    for li in soup.find('ol', class_='search-results')('li'):
+        if li.find('h2'):
+            results.append(SearchResult(li))
 
     return results
 
