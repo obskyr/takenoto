@@ -53,7 +53,7 @@ def downloadEmoji(term, outPath="", fileFormat="svg", commitId=None, termType='a
             return
         print "Several results matching the search term were found."
         print
-        print "To download one, either change your search time to the exact " \
+        print "To download one, either change your search term to the exact " \
             "name of one"
         print "of the emoji, or specify --first to just download the first result."
         print
